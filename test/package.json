@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "karma start ./karma.conf.js --single-run"
+    "test": "karma start ./karma.conf.js --single-run",
+    "test:docker": "docker run -v $PWD:/app/ -e NO_SANDBOX=true ericwooley/headless-chrome-node-docker /bin/bash -c \"cd test; yarn; yarn test\""
   },
   "author": "",
   "license": "ISC",
