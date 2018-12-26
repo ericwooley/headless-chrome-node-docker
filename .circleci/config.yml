@@ -5,4 +5,6 @@ jobs:
       - image: ericwooley/headless-chrome-node-docker
     steps:
       - checkout
-      - run: docker run -v $PWD:/app/ -e NO_SANDBOX=true ericwooley/headless-chrome-node-docker /bin/bash -c "cd test; yarn; yarn test"
+      - run: cd test
+      - run: yarn
+      - run: NO_SANDBOX=true yarn test
