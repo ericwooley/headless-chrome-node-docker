@@ -1,5 +1,7 @@
 FROM debian:stable-slim
 
+VOLUME [ "/app/", "/app/node_modules" ]
+
 # Install basic tools/utilities and google Chrome unstable (which has cross platform support for headless mode). Combining theem together so that apt cache cleanup would need to be done just once.
 RUN apt-get update -y && \
     apt-get install ca-certificates \
@@ -15,21 +17,26 @@ RUN apt-get update -y && \
       libx11-xcb1 \
       libxss1 \
       libxtst6 \
+      libpng-dev \
       fonts-liberation \
       libappindicator1 \
       xdg-utils \
       lsb-release \
       wget \
       curl \
-      xz-utils -y --no-install-recommends && \
-    wget https://dl.google.com/linux/direct/google-chrome-unstable_current_amd64.deb && \
-    dpkg -i google-chrome*.deb && \
-    apt-get install -f && \
-    apt-get clean autoclean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* google-chrome-unstable_current_amd64.deb
+      xz-utils \
+      git \
+      python-pip \
+      libappindicator3-1 -y --no-install-recommends
+
+RUN wget https://dl.google.com/linux/direct/google-chrome-unstable_current_amd64.deb
+RUN dpkg -i google-chrome*.deb 
+RUN apt-get install -f 
+RUN apt-get clean autoclean 
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* google-chrome-unstable_current_amd64.deb
 
 # Install nodejs
-ENV NPM_CONFIG_LOGLEVEL=info NODE_VERSION=8.4.0
+ENV NPM_CONFIG_LOGLEVEL=info NODE_VERSION=8.11.3
 
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz" \
   && tar -xJf "node-v$NODE_VERSION-linux-x64.tar.xz" -C /usr/local --strip-components=1 \
@@ -37,7 +44,7 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
 # Install yarn
-ENV YARN_VERSION 0.27.5
+ENV YARN_VERSION 1.12.3
 
 RUN curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz" \
   && mkdir -p /opt/yarn \
@@ -45,3 +52,5 @@ RUN curl -fSLO --compressed "https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$
   && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarn \
   && ln -s /opt/yarn/bin/yarn /usr/local/bin/yarnpkg \
   && rm yarn-v$YARN_VERSION.tar.gz
+
+WORKDIR /app/
